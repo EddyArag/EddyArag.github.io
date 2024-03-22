@@ -12,7 +12,7 @@
         Codigo By: MartL7
     -->
 </head>
-<body>
+<body onclick="PlayAudio">
 
     <div class="Contenedor-Binicio">
         <button class="Button" id="BVer"> Clicka aqui </button>
@@ -47,8 +47,13 @@
 
     <script src="Js/app.js"></script>
     <script src="Js/Dis.js"></script>
-    <audio autoplay controls loop>
+    <audio id="musica1" autoplay controls loop>
         <source src="audio/flores.mp3"type="audio/mpeg">
     </audio>
+    <script>
+      function PlayAudio(){
+        document.getElementById("musica1").play();
+      }
+    </script>
 </body>
 </html>

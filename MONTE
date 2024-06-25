@@ -1,0 +1,314 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+#include <stdexcept>
+
+using namespace std;
+
+// Clase base para libros
+class Libro {
+protected:
+    string titulo;
+    string autor;
+    string ISBN;
+    string genero;
+    int ano;
+    bool disponible;
+
+public:
+    Libro(string titulo, string autor, string ISBN, string genero, int ano, bool disponible)
+        : titulo(titulo), autor(autor), ISBN(ISBN), genero(genero), ano(ano), disponible(disponible) {}
+
+    string getTitulo() { return titulo; }
+    string getAutor() { return autor; }
+    string getISBN() { return ISBN; }
+    string getGenero() { return genero; }
+    int getAno() { return ano; }
+    bool isDisponible() { return disponible; }
+
+    void setDisponible(bool disponible) { this->disponible = disponible; }
+};
+
+// Clase derivada para libros con información adicional
+class LibroAcademico : public Libro {
+private:
+    string editorial;
+    int edicion;
+
+public:
+    LibroAcademico(string titulo, string autor, string ISBN, string genero, int ano, bool disponible, string editorial, int edicion)
+        : Libro(titulo, autor, ISBN, genero, ano, disponible), editorial(editorial), edicion(edicion) {}
+
+    string getEditorial() { return editorial; }
+    int getEdicion() { return edicion; }
+};
+
+// Clase base para usuarios
+class Usuario {
+protected:
+    string nombre;
+    int ID;
+    string tipo;
+
+public:
+    Usuario(string nombre, int ID, string tipo)
+        : nombre(nombre), ID(ID), tipo(tipo) {}
+
+    string getNombre() { return nombre; }
+    int getID() { return ID; }
+    string getTipo() { return tipo; }
+};
+
+// Clase derivada para estudiantes
+class Estudiante : public Usuario {
+private:
+    string carrera;
+
+public:
+    Estudiante(string nombre, int ID, string carrera)
+        : Usuario(nombre, ID, "Estudiante"), carrera(carrera) {}
+
+    string getCarrera() { return carrera; }
+};
+
+// Clase derivada para profesores
+class Profesor : public Usuario {
+private:
+    string departamento;
+
+public:
+    Profesor(string nombre, int ID, string departamento)
+        : Usuario(nombre, ID, "Profesor"), departamento(departamento) {}
+
+    string getDepartamento() { return departamento; }
+};
+
+// Clase derivada para investigadores
+class Investigador : public Usuario {
+private:
+    string institucion;
+
+public:
+    Investigador(string nombre, int ID, string institucion)
+        : Usuario(nombre, ID, "Investigador"), institucion(institucion) {}
+
+    string getInstitucion() { return institucion; }
+};
+
+// Clase para préstamos
+class Prestamo {
+private:
+    Libro* libro;
+    Usuario* usuario;
+    string fechaPrestamo;
+    string fechaDevolucion;
+
+public:
+    Prestamo(Libro* libro, Usuario* usuario, string fechaPrestamo, string fechaDevolucion)
+        : libro(libro), usuario(usuario), fechaPrestamo(fechaPrestamo), fechaDevolucion(fechaDevolucion) {}
+
+    Libro* getLibro() { return libro; }
+    Usuario* getUsuario() { return usuario; }
+    string getFechaPrestamo() { return fechaPrestamo; }
+    string getFechaDevolucion() { return fechaDevolucion; }
+};
+
+// Clase para la biblioteca
+class Biblioteca {
+private:
+    vector<Libro*> libros;
+    vector<Usuario*> usuarios;
+    vector<Prestamo*> prestamos;
+
+public:
+    Biblioteca() {}
+
+    // Agregar libro
+    void agregarLibro(Libro* libro) { libros.push_back(libro); }
+
+    // Modificar libro
+    void modificarLibro(Libro* libro) {
+        for (auto it = libros.begin(); it!= libros.end(); ++it) {
+            if ((*it)->getISBN() == libro->getISBN()) {
+                *it = libro;
+                return;
+            }
+        }
+        throw runtime_error("Libro no encontrado");
+    }
+
+    // Eliminar libro
+    void eliminarLibro(string ISBN) {
+        for (auto it = libros.begin(); it!= libros.end(); ++it) {
+            if ((*it)->getISBN() == ISBN) {
+                libros.erase(it);
+                return;
+            }
+        }
+        throw runtime_error("Libro no encontrado");
+    }
+
+    // Registrar usuario
+    void registrarUsuario(Usuario* usuario) { usuarios.push_back(usuario); }
+
+    // Realizar préstamo
+    void realizarPrestamo(Libro* libro, Usuario* usuario, string fechaPrestamo, string fechaDevolucion) {
+        if (!libro->isDisponible()) {
+            throw runtime_error("Libro no disponible");
+        }
+        libro->setDisponible(false);
+        prestamos.push_back(new Prestamo(libro, usuario, fechaPrestamo, fechaDevolucion));
+    }
+
+    // Devolver préstamo
+    void devolverPrestamo(Prestamo* prestamo) {
+        prestamo->getLibro()->setDisponible(true);
+        prestamos.erase(remove(prestamos.begin(), prestamos.end(), prestamo), prestamos.end());
+    }
+
+    // Buscar libros
+    vector<Libro*> buscarLibros(string criterio) {
+        vector<Libro*> resultados;
+        for (auto libro : libros) {
+            if (libro->getTitulo().find(criterio) != string::npos ||
+                libro->getAutor().find(criterio) != string::npos ||
+                libro->getISBN().find(criterio) != string::npos ||
+                libro->getGenero().find(criterio) != string::npos) {
+                resultados.push_back(libro);
+            }
+        }
+        return resultados;
+    }
+
+    // Ver detalles de un libro
+    Libro* verDetallesLibro(string ISBN) {
+        for (auto libro : libros) {
+            if (libro->getISBN() == ISBN) {
+                return libro;
+            }
+        }
+        throw runtime_error("Libro no encontrado");
+    }
+
+    // Ver historial de préstamos
+    vector<Prestamo*> verHistorialPrestamos(Usuario* usuario) {
+        vector<Prestamo*> resultados;
+        for (auto prestamo : prestamos) {
+            if (prestamo->getUsuario() == usuario) {
+                resultados.push_back(prestamo);
+            }
+        }
+        return resultados;
+    }
+};
+
+int main() {
+    Biblioteca biblioteca;
+
+    // Código para agregar, modificar, eliminar libros, registrar y gestionar usuarios, realizar préstamos y devoluciones, y generar informes
+
+    return 0;
+}
+
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <string>
+#include <ctime>
+
+using namespace std;
+
+// Clase Libro
+class Libro {
+public:
+    string titulo;
+    string autor;
+    string ISBN;
+    string genero;
+    int anno;
+    bool disponible;
+
+    Libro() {}
+    Libro(string t, string a, string isbn, string g, int an) : titulo(t), autor(a), ISBN(isbn), genero(g), anno(an), disponible(true) {}
+
+    void mostrarInfo() {
+        cout << "Título: " << titulo << endl;
+        cout << "Autor: " << autor << endl;
+        cout << "ISBN: " << ISBN << endl;
+        cout << "Género: " << genero << endl;
+        cout << "Año: " << anno << endl;
+        cout << "Disponible: " << (disponible ? "Sí" : "No") << endl;
+    }
+};
+
+// Clase Usuario
+class Usuario {
+public:
+    string nombre;
+    int ID;
+    string tipo; // Estudiante, Profesor, Investigador
+
+    Usuario() {}
+    Usuario(string n, int id, string t) : nombre(n), ID(id), tipo(t) {}
+
+    void mostrarInfo() {
+        cout << "Nombre: " << nombre << endl;
+        cout << "ID: " << ID << endl;
+        cout << "Tipo: " << tipo << endl;
+    }
+};
+
+// Clase Prestamo
+class Prestamo {
+public:
+    int ID_prestamo;
+    int ID_usuario;
+    string ISBN_libro;
+    time_t fecha_prestamo;
+    time_t fecha_devolucion;
+
+    Prestamo() {}
+    Prestamo(int id_p, int id_u, string isbn, time_t fp, time_t fd) : ID_prestamo(id_p), ID_usuario(id_u), ISBN_libro(isbn), fecha_prestamo(fp), fecha_devolucion(fd) {}
+};
+
+// Función para agregar un libro al catálogo
+void agregarLibro(vector<Libro>& catalogo) {
+    string titulo, autor, isbn, genero;
+    int anno;
+
+    cout << "Ingrese título del libro: ";
+    getline(cin, titulo);
+    cout << "Ingrese autor del libro: ";
+    getline(cin, autor);
+    cout << "Ingrese ISBN del libro: ";
+    getline(cin, isbn);
+    cout << "Ingrese género del libro: ";
+    getline(cin, genero);
+    cout << "Ingrese año de publicación del libro: ";
+    cin >> anno;
+    cin.ignore(); // Limpiar el buffer de entrada
+
+    Libro nuevoLibro(titulo, autor, isbn, genero, anno);
+    catalogo.push_back(nuevoLibro);
+
+    cout << "Libro agregado al catálogo correctamente." << endl;
+}
+
+// Función principal (main)
+int main() {
+    vector<Libro> catalogo;
+    vector<Usuario> usuarios;
+    vector<Prestamo> prestamos;
+
+    // Ejemplo de uso
+    agregarLibro(catalogo);
+
+    // Mostrar información de todos los libros en el catálogo
+    for (const auto& libro : catalogo) {
+        libro.mostrarInfo();
+        cout << endl;
+    }
+
+    return 0;
+}
